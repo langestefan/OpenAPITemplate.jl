@@ -1,5 +1,6 @@
-using Test
+using {{PKG}}
 using TOML
+using Test
 
 @testset "scaffold-info.toml" begin
     info_path = joinpath(pkgdir({{PKG}}), "scaffold-info.toml")

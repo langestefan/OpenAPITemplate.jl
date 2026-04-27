@@ -2,7 +2,6 @@ using {{PKG}}
 using OpenAPI
 using Test
 
-# Synthetic APIModel for show-method coverage that doesn't depend on a spec.
 Base.@kwdef mutable struct _ShowFixture <: OpenAPI.APIModel
     id::Union{Nothing,Int} = nothing
     name::Union{Nothing,String} = nothing

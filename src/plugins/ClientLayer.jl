@@ -42,7 +42,8 @@ end
 function _write_client_file(pkg_dir::AbstractString, pkg::AbstractString)
     client_dir = joinpath(pkg_dir, "src", "client")
     mkpath(client_dir)
-    for fname in ("auth.jl", "Client.jl", "pagination.jl", "show.jl")
+    for fname in ("auth.jl", "errors.jl", "retry.jl", "rate_limit.jl", "timeout.jl",
+                  "Client.jl", "pagination.jl", "show.jl")
         src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "client", fname * ".tpl")
         write(joinpath(client_dir, fname), _render(read(src, String), pkg))
     end

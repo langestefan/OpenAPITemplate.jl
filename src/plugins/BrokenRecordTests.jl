@@ -33,8 +33,8 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
     _write_test_file(test_dir, "Project.toml", "test/Project.toml.tpl",
                      Dict{String,String}("PKG" => pkg, "PKG_UUID" => _read_pkg_uuid(pkg_dir)))
     _write_test_file(test_dir, "runtests.jl", "test/runtests.jl.tpl",
-                     Dict{String,String}())
-    _write_test_file(test_dir, "linting.jl", "test/linting.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-linting.jl", "test/test-linting.jl.tpl",
                      Dict{String,String}("PKG" => pkg))
     _write_test_file(test_dir, "test-client-construction.jl",
                      "test/test-client-construction.jl.tpl",
@@ -47,6 +47,18 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
                      Dict{String,String}("PKG" => pkg))
     _write_test_file(test_dir, "test-show.jl",
                      "test/test-show.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-errors.jl",
+                     "test/test-errors.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-retry.jl",
+                     "test/test-retry.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-rate-limit.jl",
+                     "test/test-rate-limit.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-timeout.jl",
+                     "test/test-timeout.jl.tpl",
                      Dict{String,String}("PKG" => pkg))
 
     if has_api
@@ -67,11 +79,15 @@ function _write_test_file(
     tpl_subpath::AbstractString,
     vars::Dict{String,String},
 )
-    src = joinpath(OpenAPITemplate.TEMPLATES_DIR, tpl_subpath)
-    write(joinpath(test_dir, dst_name), _render_kv(read(src, String), vars))
+    write(
+        joinpath(test_dir, dst_name),
+        _render_kv(
+            read(joinpath(OpenAPITemplate.TEMPLATES_DIR, tpl_subpath), String),
+            vars,
+        ),
+    )
 end
 
-function _read_pkg_uuid(pkg_dir::AbstractString)
-    toml = TOML.parsefile(joinpath(pkg_dir, "Project.toml"))
-    return get(toml, "uuid", "00000000-0000-0000-0000-000000000000")
-end
+_read_pkg_uuid(pkg_dir::AbstractString) =
+    get(TOML.parsefile(joinpath(pkg_dir, "Project.toml")), "uuid",
+        "00000000-0000-0000-0000-000000000000")

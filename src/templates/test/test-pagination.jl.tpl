@@ -19,7 +19,7 @@ end
         data[(offset+1):min(offset + limit, length(data))]
     end)
     @test items == data
-    @test fetched == [(0, 10), (10, 10), (20, 10)]  # 3rd page has 3 < 10 → stop
+    @test fetched == [(0, 10), (10, 10), (20, 10)]
 end
 
 @testset "paginate_pagenum stops on empty page" begin

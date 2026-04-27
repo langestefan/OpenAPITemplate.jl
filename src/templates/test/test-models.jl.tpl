@@ -19,12 +19,10 @@ end
            getfield(api_mod, n) <: OpenAPI.APIModel
     ]
     @test !isempty(model_types)
-    # Every model should be constructible with all-default kwargs.
     for T in model_types
         @test_nowarn try
             T()
         catch e
-            # Some specs require fields; instantiation is best-effort here.
             e isa Union{ArgumentError,MethodError,UndefKeywordError} || rethrow()
         end
     end
