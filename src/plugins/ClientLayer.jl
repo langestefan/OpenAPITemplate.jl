@@ -5,8 +5,10 @@ using TOML
 const HTTP_UUID = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 const JSON_UUID = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 const OPENAPI_UUID = "d5e62ea6-ddf3-4d43-8e4c-ad5e6c8bfd7d"
+const BASE64_UUID = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 const RUNTIME_DEPS = [
+    (name = "Base64", uuid = BASE64_UUID, compat = "1"),
     (name = "HTTP", uuid = HTTP_UUID, compat = "1"),
     (name = "JSON", uuid = JSON_UUID, compat = "1"),
     (name = "OpenAPI", uuid = OPENAPI_UUID, compat = "0.2"),
@@ -38,10 +40,12 @@ function PkgTemplates.posthook(p::ClientLayer, ::Template, pkg_dir::AbstractStri
 end
 
 function _write_client_file(pkg_dir::AbstractString, pkg::AbstractString)
-    src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "client", "Client.jl.tpl")
-    dst = joinpath(pkg_dir, "src", "client", "Client.jl")
-    mkpath(dirname(dst))
-    write(dst, _render(read(src, String), pkg))
+    client_dir = joinpath(pkg_dir, "src", "client")
+    mkpath(client_dir)
+    for fname in ("auth.jl", "Client.jl")
+        src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "client", fname * ".tpl")
+        write(joinpath(client_dir, fname), _render(read(src, String), pkg))
+    end
 end
 
 function _rewrite_module_file(pkg_dir::AbstractString, pkg::AbstractString)

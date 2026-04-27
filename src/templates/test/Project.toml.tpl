@@ -1,5 +1,6 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
 OpenAPI = "d5e62ea6-ddf3-4d43-8e4c-ad5e6c8bfd7d"
 {{PKG}} = "{{PKG_UUID}}"
