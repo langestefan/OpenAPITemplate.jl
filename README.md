@@ -29,6 +29,17 @@ t("PetstoreClient")
 
 ## Status
 
-Phase 1 (MVP plugin skeleton) — composable plugin scaffold and a loadable
-generated package. OpenAPI codegen, ergonomic middleware, reliability,
-testing, and docs land in subsequent phases.
+- **Phase 1 — MVP plugin skeleton** ✅
+- **Phase 2 — OpenAPI codegen integration** ✅ (drives `julia-client` via the
+  `npx` wrapper at scaffold time; populates `src/api/`, writes
+  `gen/regenerate.jl` for later refreshes, and adds `Dates` + `TimeZones` deps
+  the generated module needs.)
+
+Ergonomic middleware, reliability primitives, testing infrastructure, and
+docs land in Phases 3–6.
+
+## Maintainer prerequisites
+
+Scaffolding **with** a spec needs Java 11+ and Node 18+ on PATH. End users of
+the generated package never need either — the committed `src/api/` is plain
+Julia source.

@@ -26,8 +26,8 @@ Base.@kwdef struct ClientLayer <: Plugin
     auth_modes::Vector{Symbol} = [:bearer]
 end
 
-# Run after stock plugins (priority 1000) but before Git (priority 5).
-PkgTemplates.priority(::ClientLayer, ::typeof(PkgTemplates.posthook)) = 100
+# Run after stock plugins (priority 1000), before OpenAPISpec (100), before Git (5).
+PkgTemplates.priority(::ClientLayer, ::typeof(PkgTemplates.posthook)) = 200
 
 function PkgTemplates.posthook(p::ClientLayer, ::Template, pkg_dir::AbstractString)
     pkg = pkg_name(pkg_dir)

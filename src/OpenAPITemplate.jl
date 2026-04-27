@@ -35,10 +35,12 @@ function APIWrapper(;
     rate_limit::Bool = true,
     deploy_docs::Bool = true,
 )
-    return Plugin[
+    return Any[
+        # Disable the default `Tests` plugin — `BrokenRecordTests` owns the
+        # generated package's test scaffolding.
+        !PkgTemplates.Tests,
         ProjectFile(),
         SrcDir(),
-        Tests(),
         Readme(),
         License(),
         Git(),

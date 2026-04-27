@@ -1,41 +1,22 @@
 using Test
-using OpenAPITemplate
-using PkgTemplates
 
-@testset "OpenAPITemplate Phase 1" begin
-    mktempdir() do dir
-        t = Template(;
-            user = "testuser",
-            dir = dir,
-            plugins = APIWrapper(),
-            interactive = false,
-        )
-        t("ScratchAPI")
+include("linting.jl")
 
-        pkg_dir = joinpath(dir, "ScratchAPI")
-        @test isdir(pkg_dir)
-        @test isfile(joinpath(pkg_dir, "Project.toml"))
-        @test isfile(joinpath(pkg_dir, "src", "ScratchAPI.jl"))
-        @test isfile(joinpath(pkg_dir, "src", "client", "Client.jl"))
-        @test isfile(joinpath(pkg_dir, "test", "runtests.jl"))
+#=
+Don't add your tests to runtests.jl. Instead, create files named
 
-        # Module file should include the client overlay.
-        module_src = read(joinpath(pkg_dir, "src", "ScratchAPI.jl"), String)
-        @test occursin("include(\"client/Client.jl\")", module_src)
-        @test occursin("using HTTP, JSON, OpenAPI", module_src)
+    test-title-for-my-test.jl
 
-        # Project.toml should pick up the runtime deps + compat bounds.
-        proj = read(joinpath(pkg_dir, "Project.toml"), String)
-        @test occursin("HTTP =", proj)
-        @test occursin("JSON =", proj)
-        @test occursin("OpenAPI =", proj)
-
-        # End-to-end: the scaffolded package should test green on its own.
-        if get(ENV, "OPENAPITEMPLATE_SKIP_INNER_TEST", "0") != "1"
-            run(Cmd(
-                `julia --project=. -e 'using Pkg; Pkg.test()'`;
-                dir = pkg_dir,
-            ))
+The file will be automatically included inside a `@testset` with title "Title For My Test".
+=#
+for (root, dirs, files) in walkdir(@__DIR__)
+    for file in files
+        if isnothing(match(r"^test-.*\.jl$", file))
+            continue
+        end
+        title = titlecase(replace(splitext(file[6:end])[1], "-" => " "))
+        @testset "$title" begin
+            include(joinpath(root, file))
         end
     end
 end
