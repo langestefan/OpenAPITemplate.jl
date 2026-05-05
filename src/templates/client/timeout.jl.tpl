@@ -15,9 +15,13 @@ function with_timeout(fn::Function, seconds::Real; phase::Symbol = :total)
     end
     task = @async fn()
     status = timedwait(() -> istaskdone(task), Float64(seconds); pollint = 0.01)
-    if status === :ok
-        return fetch(task)  # rethrows if the task threw
-    else
-        throw(TimeoutError(phase))
+    status === :ok || throw(TimeoutError(phase))
+    try
+        return fetch(task)
+    catch e
+        # `fetch` wraps task exceptions in TaskFailedException — surface the
+        # original so callers can write `@test_throws ErrorException ...`.
+        e isa TaskFailedException && throw(e.task.result)
+        rethrow()
     end
 end
