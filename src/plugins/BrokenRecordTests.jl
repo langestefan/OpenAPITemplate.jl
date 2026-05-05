@@ -60,6 +60,20 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
     _write_test_file(test_dir, "test-timeout.jl",
                      "test/test-timeout.jl.tpl",
                      Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-middleware.jl",
+                     "test/test-middleware.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-cassettes.jl",
+                     "test/test-cassettes.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(test_dir, "test-mocking.jl",
+                     "test/test-mocking.jl.tpl",
+                     Dict{String,String}("PKG" => pkg))
+    # `test/cassettes/` is the BrokenRecord storage dir. Add a `.gitkeep`
+    # so the directory exists even before any cassettes have been recorded.
+    cassette_dir = joinpath(test_dir, "cassettes")
+    mkpath(cassette_dir)
+    write(joinpath(cassette_dir, ".gitkeep"), "")
 
     if has_api
         api_pkg = pkg * "API"

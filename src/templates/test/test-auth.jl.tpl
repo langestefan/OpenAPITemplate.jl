@@ -41,3 +41,27 @@ end
     _, _, h2 = hook("/foo", nothing, h)
     @test h2["Authorization"] == "Bearer tok"
 end
+
+@testset "resolve_credentials reads env" begin
+    withenv("CREDTEST_TOKEN" => "from-env",
+            "CREDTEST_API_KEY" => "secret",
+            "CREDTEST_API_KEY_HEADER" => "X-Custom",
+            "CREDTEST_USERNAME" => "u", "CREDTEST_PASSWORD" => "p") do
+        @test {{PKG}}.resolve_credentials({{PKG}}.BearerToken; env_prefix = "CREDTEST").token == "from-env"
+        ak = {{PKG}}.resolve_credentials({{PKG}}.APIKey; env_prefix = "CREDTEST")
+        @test ak.key == "secret" && ak.header == "X-Custom"
+        ba = {{PKG}}.resolve_credentials({{PKG}}.BasicAuth; env_prefix = "CREDTEST")
+        @test ba.username == "u" && ba.password == "p"
+    end
+end
+
+@testset "resolve_credentials errors with helpful message" begin
+    withenv("MISSING_TOKEN" => nothing,
+            "MISSING_API_KEY" => nothing,
+            "MISSING_USERNAME" => nothing,
+            "MISSING_PASSWORD" => nothing) do
+        @test_throws ArgumentError {{PKG}}.resolve_credentials({{PKG}}.BearerToken; env_prefix = "MISSING")
+        @test_throws ArgumentError {{PKG}}.resolve_credentials({{PKG}}.APIKey; env_prefix = "MISSING")
+        @test_throws ArgumentError {{PKG}}.resolve_credentials({{PKG}}.BasicAuth; env_prefix = "MISSING")
+    end
+end

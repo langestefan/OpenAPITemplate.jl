@@ -69,7 +69,15 @@ function PkgTemplates.posthook(p::OpenAPISpec, ::Template, pkg_dir::AbstractStri
     _rewrite_module_with_api(pkg_dir, pkg, api_pkg)
     _add_gitattributes(pkg_dir)
     _write_scaffold_info(pkg_dir, p.spec_url, p.generator_version)
+    _write_drift_check_workflow(pkg_dir)
     return nothing
+end
+
+function _write_drift_check_workflow(pkg_dir::AbstractString)
+    src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "gen", "regen-check.yml.tpl")
+    dst = joinpath(pkg_dir, ".github", "workflows", "regen-check.yml")
+    mkpath(dirname(dst))
+    cp(src, dst; force = true)
 end
 
 function _add_codegen_deps(pkg_dir::AbstractString)
