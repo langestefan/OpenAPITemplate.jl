@@ -1,13 +1,16 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
-OpenAPITemplate = "225a8ebc-8dd1-490b-ad41-9c194d8cb285"
 PkgTemplates = "14b8a8f1-9102-5b29-a752-f990bacb7fe1"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-[sources]
-OpenAPITemplate = { path = ".." }
+# Note: the package being tested (OpenAPITemplate) is NOT listed here.
+# `Pkg.test` develops it into the sandbox automatically on every Julia
+# version. Listing it would require `[sources]` to point at the parent
+# path — and `[sources]` is a Julia 1.11+ feature, ignored by 1.10,
+# which would then try to resolve OpenAPITemplate from the registry and
+# fail with "has no known versions".
 
 [compat]
 Aqua = "0.8"
