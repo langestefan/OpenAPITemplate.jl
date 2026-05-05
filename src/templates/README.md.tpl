@@ -121,8 +121,11 @@ Concrete checklist for moving this scaffold to a real package:
       under `src/client/auth.jl` that `apply!`s to a `Dict{String,String}`.
 - [ ] Replace the placeholder `ENV["{{PKG_UPPER}}_TOKEN"]` references
       throughout the README and tests with the real env-var name.
-- [ ] Record at least one cassette: `BROKENRECORD_RECORD=1 julia --project=test test/runtests.jl`
-      (after `pkg> activate test; pkg> add BrokenRecord@0.4`).
+- [ ] After `pkg> activate test; pkg> add BrokenRecord@0.1`, write at least
+      one test using `BrokenRecord.playback(f, "<name>.yml")` and run it
+      once on a machine with network + valid credentials. The cassette
+      is written to `test/cassettes/<name>.yml`; commit it. Subsequent
+      runs replay deterministically.
 - [ ] Skim `src/api/` once and note any rough edges from the BETA
       `julia-client` generator (typically nullable types and OAuth2
       schemes — see `OPENAPI_GENERATOR_NOTES.md` if present).

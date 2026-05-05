@@ -5,8 +5,8 @@ using TOML: TOML
     Auth
 
 Abstract supertype for authentication strategies. Concrete subtypes are
-applied to outgoing requests via [`apply!`](@ref) and composed into a
-`pre_request_hook` for `OpenAPI.Clients.Client` by [`build_pre_request_hook`](@ref).
+applied to outgoing requests via `apply!` and composed into a
+`pre_request_hook` for `OpenAPI.Clients.Client` by `build_pre_request_hook`.
 """
 abstract type Auth end
 
@@ -76,7 +76,7 @@ end
 
 Build the `pre_request_hook` accepted by `OpenAPI.Clients.Client`. The hook
 implements both required signatures: a `Ctx`-only pass-through and a
-`(resource, body, headers)` form that calls [`apply!`](@ref) on `auth`.
+`(resource, body, headers)` form that calls `apply!` on `auth`.
 """
 function build_pre_request_hook(auth::Auth)
     hook(ctx) = ctx

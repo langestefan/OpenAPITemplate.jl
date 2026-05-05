@@ -49,6 +49,7 @@ function PkgTemplates.posthook(p::VitepressDocs, t::Template, pkg_dir::AbstractS
     _write_docs_template(docs_dir, "make.jl", "docs/make.jl.tpl", vars)
     _write_docs_template(src_dir, "index.md", "docs/src/index.md.tpl", vars)
     _write_docs_template(src_dir, "getting_started.md", "docs/src/getting_started.md.tpl", vars)
+    _write_docs_template(src_dir, "cassette_testing.md", "docs/src/cassette_testing.md.tpl", vars)
     _write_docs_template(src_dir, "julia_reference.md", "docs/src/julia_reference.md.tpl", vars)
 
     if has_spec

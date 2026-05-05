@@ -69,6 +69,9 @@ const API_PAGES = HAS_SPEC ? _api_pages(SPEC_SRC, joinpath(@__DIR__, "src")) : A
 const PAGES = Any[
     "Home" => "index.md",
     "Getting Started" => "getting_started.md",
+    "Guides" => Any[
+        "Recorded HTTP tests" => "cassette_testing.md",
+    ],
     "Julia API Reference" => "julia_reference.md",
 ]
 if !isempty(API_PAGES)

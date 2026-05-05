@@ -43,6 +43,11 @@ TokenBucket
 acquire!
 with_rate_limit
 with_timeout
+with_logging
+redact_headers
+DefaultMiddleware
+default_middleware
+with_defaults
 ```
 
 ## Pagination

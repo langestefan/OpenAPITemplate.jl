@@ -19,6 +19,7 @@ using PkgTemplates
         @test isfile(joinpath(docs_dir, "make.jl"))
         @test isfile(joinpath(docs_dir, "src", "index.md"))
         @test isfile(joinpath(docs_dir, "src", "getting_started.md"))
+        @test isfile(joinpath(docs_dir, "src", "cassette_testing.md"))
         @test isfile(joinpath(docs_dir, "src", "julia_reference.md"))
         @test isfile(joinpath(pkg_dir, ".github", "workflows", "Documentation.yml"))
 

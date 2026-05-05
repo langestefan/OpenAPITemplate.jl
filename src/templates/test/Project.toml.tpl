@@ -25,7 +25,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 # parallel test items:
 #
 #   pkg> activate test
-#   pkg> add BrokenRecord@0.4 Mocking@0.8 ReTestItems@1
+#   pkg> add BrokenRecord@0.1 Mocking@0.8 ReTestItems@1
 #
 # `test-cassettes.jl` and `test-mocking.jl` detect-and-skip when the deps
 # are missing.
