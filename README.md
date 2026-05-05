@@ -20,6 +20,11 @@ The generator produces a two-layer architecture:
 
 ## Quick start
 
+The recommended smoke test uses the **Swagger 2.0 Petstore demo** — it has
+defined response schemas for every endpoint and the demo server reliably
+returns valid data, making it ideal for verifying both codegen and the
+docs site:
+
 ```julia
 using PkgTemplates, OpenAPITemplate
 
@@ -27,15 +32,42 @@ t = Template(;
     user = "your-username",
     dir = pwd(),                       # see "Output directory" below
     plugins = APIWrapper(;
-        spec_url = "https://petstore3.swagger.io/api/v3/openapi.json",
+        spec_url = "https://petstore.swagger.io/v2/swagger.json",
     ),
 )
 t("PetstoreClient")
 ```
 
-`spec_url` may be omitted to scaffold a hand-written-only package, or pointed
-at a local file path. Swagger 2.0 specs are auto-converted to OpenAPI 3.0
-(the docs browser requires OAS 3+).
+The plugin auto-detects Swagger 2.0 and **converts the spec to OpenAPI 3.0
+in place** (via `npx swagger2openapi`) before codegen — the original is
+preserved at `spec/openapi.v2-original.json`. Conversion is necessary
+because [`vitepress-openapi`](https://github.com/enzonotario/vitepress-openapi),
+which renders the interactive REST API browser in the generated docs site,
+only accepts OAS 3+.
+
+### OpenAPI 3.0 alternative — Petstore v3
+
+The OpenAPI 3.0 demo at `petstore3.swagger.io` works too:
+
+```julia
+plugins = APIWrapper(;
+    spec_url = "https://petstore3.swagger.io/api/v3/openapi.json",
+)
+```
+
+…but be aware that, as of writing, **several v3 demo endpoints are broken
+on the server side** (`GET /pet/findByStatus`, `GET /store/inventory`,
+`POST /pet` all currently return HTTP 500), and many operations have
+incomplete response schemas. The codegen still produces a working package,
+but the docs-site try-it-out and any cassette tests against those
+endpoints will fail. Prefer v2 for end-to-end verification; reach for v3
+only when you actually need a 3.x spec for your own API.
+
+### Other usage
+
+`spec_url` may be omitted to scaffold a hand-written-only package, or
+pointed at a local file path. Both `http(s)://` URLs and bare filesystem
+paths work.
 
 > [!IMPORTANT]
 > **`Template` does not use your current working directory.** PkgTemplates
