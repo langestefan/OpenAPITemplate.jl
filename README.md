@@ -1,5 +1,11 @@
 # OpenAPITemplate.jl
 
+[![Test workflow status](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Test.yml/badge.svg?branch=main)](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Test.yml?query=branch%3Amain)
+[![Lint workflow status](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Lint.yml/badge.svg?branch=main)](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Lint.yml?query=branch%3Amain)
+[![Coverage](https://codecov.io/gh/langestefan/OpenAPITemplate.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/langestefan/OpenAPITemplate.jl)
+[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
+[![tested with JET.jl](https://img.shields.io/badge/%F0%9F%9B%A9%EF%B8%8F_tested_with-JET.jl-233f9a)](https://github.com/aviatesk/JET.jl)
+
 A [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) plugin that
 scaffolds Julia REST/JSON API wrapper packages.
 
