@@ -67,23 +67,31 @@ end
 
 @testset "_render_kv substitutes all keys" begin
     text = "package={{PKG}} api={{API_PKG}} version={{VERSION}}"
-    out = OpenAPITemplate._render_kv(text, Dict("PKG" => "Foo",
-                                                "API_PKG" => "FooAPI",
-                                                "VERSION" => "1.2.3"))
+    out = OpenAPITemplate._render_kv(
+        text, Dict(
+            "PKG" => "Foo",
+            "API_PKG" => "FooAPI",
+            "VERSION" => "1.2.3"
+        )
+    )
     @test out == "package=Foo api=FooAPI version=1.2.3"
 end
 
 @testset "_render_kv leaves unmatched placeholders alone" begin
-    out = OpenAPITemplate._render_kv("hello {{PKG}} {{UNKNOWN}}",
-                                     Dict("PKG" => "World"))
+    out = OpenAPITemplate._render_kv(
+        "hello {{PKG}} {{UNKNOWN}}",
+        Dict("PKG" => "World")
+    )
     @test out == "hello World {{UNKNOWN}}"
 end
 
 @testset "_write_gen_files emits openapi-config and regenerate.jl" begin
     mktempdir() do dir
-        OpenAPITemplate._write_gen_files(dir, "MyAPI",
-                                         "https://example.com/openapi.json",
-                                         "7.10.0")
+        OpenAPITemplate._write_gen_files(
+            dir, "MyAPI",
+            "https://example.com/openapi.json",
+            "7.10.0"
+        )
         cfg = read(joinpath(dir, "gen", "openapi-config.json"), String)
         @test occursin("\"packageName\": \"MyAPI\"", cfg)
 
