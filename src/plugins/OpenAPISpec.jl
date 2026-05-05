@@ -6,6 +6,7 @@ using PkgTemplates: with_project
 
 const GENERATOR_VERSION = "7.10.0"
 const NPM_WRAPPER_VERSION = "2.21.4"
+const SWAGGER2OPENAPI_VERSION = "7.0.8"
 
 # Direct deps the generated module pulls in (transitive deps of OpenAPI but
 # the generated `using ...` line needs them declared explicitly).
@@ -23,6 +24,11 @@ Drives the OpenAPI Generator `julia-client` at scaffold time. When `spec_url`
 is set:
 
   - Saves the spec to `spec/openapi.json`.
+  - **If the spec is Swagger 2.0**, runs `npx swagger2openapi` to convert it
+    to OpenAPI 3.0 in place; the original is preserved as
+    `spec/openapi.v2-original.json`. (The `julia-client` codegen handles both
+    formats, but `vitepress-openapi` — used by the docs browser — only
+    parses OAS 3+.)
   - Writes `gen/openapi-config.json` and `gen/regenerate.jl`.
   - Runs `openapi-generator-cli` once via `npx`, populating `src/api/`.
   - Re-writes `src/<PKG>.jl` to include and re-export the generated module.
@@ -55,6 +61,7 @@ function PkgTemplates.posthook(p::OpenAPISpec, ::Template, pkg_dir::AbstractStri
 
     spec_path = joinpath(pkg_dir, "spec", "openapi.json")
     _save_spec(p.spec_url, spec_path)
+    _normalize_to_oas3!(spec_path)
 
     _write_gen_files(pkg_dir, api_pkg, p.spec_url, p.generator_version)
     _run_codegen(pkg_dir, api_pkg, spec_path, p.generator_version)
@@ -94,6 +101,35 @@ function _save_spec(spec_url::AbstractString, dst::AbstractString)
     else
         error("OpenAPISpec: spec_url is neither an HTTP URL nor an existing file: $spec_url")
     end
+end
+
+# Detects Swagger 2.0 by string-scanning the spec and converts it to OpenAPI
+# 3.0 in place via `npx swagger2openapi`. The original v2 file is preserved
+# alongside the canonical 3.0 output. Conversion is needed because
+# `vitepress-openapi` (the docs browser) only parses OAS 3+. The
+# `julia-client` codegen handles both, so this is purely for the docs layer.
+function _normalize_to_oas3!(spec_path::AbstractString)
+    head = read(spec_path, String)
+    # Sample the first 1KB for the version key — enough for any well-formed
+    # spec since `swagger`/`openapi` is a top-level field.
+    sample = head[1:min(1024, lastindex(head))]
+    is_v2 = occursin(r"\"swagger\"\s*:\s*\"2\.", sample) &&
+            !occursin(r"\"openapi\"\s*:\s*\"3", sample)
+    is_v2 || return nothing
+
+    Sys.which("npx") === nothing && error(
+        "OpenAPISpec: spec is Swagger 2.0; converting to OpenAPI 3.0 needs " *
+        "`npx` (Node 18+). Install Node or feed an OAS 3.x spec.",
+    )
+
+    backup = replace(spec_path, r"\.json$" => ".v2-original.json")
+    cp(spec_path, backup; force = true)
+    cmd = `npx --yes swagger2openapi@$(SWAGGER2OPENAPI_VERSION) $spec_path -o $spec_path`
+    run(cmd)
+    @info "OpenAPISpec: converted Swagger 2.0 → OpenAPI 3.0 (original saved as " *
+          "`spec/$(basename(backup))`). The v3 form is required for the " *
+          "Vitepress REST API browser."
+    return nothing
 end
 
 function _write_gen_files(

@@ -1,19 +1,23 @@
----
-outline: deep
----
-
 # REST API Reference
 
-The interactive browser below is rendered by
-[`vitepress-openapi`](https://github.com/enzonotario/vitepress-openapi) from
-the OpenAPI spec bundled in this package
-(`{{PKG}}/spec/openapi.json`).
+This page is the interactive browser for the OpenAPI spec bundled with
+[`{{PKG}}.jl`](../). It is rendered from
+[`spec/openapi.json`](/openapi.json) by
+[`vitepress-openapi`](https://github.com/enzonotario/vitepress-openapi).
 
-::: warning Try-it-out and CORS
-Most public APIs do not enable CORS for arbitrary origins, so the in-browser
-"send request" button often fails with a CORS error against production hosts.
-The pages below are still useful for browsing endpoints, parameter shapes,
-response schemas, and copying generated request snippets.
-:::
+```@raw html
+<div class="custom-block warning">
+  <p class="custom-block-title">Try-it-out and CORS</p>
+  <p>Most public APIs do not enable CORS for arbitrary origins, so the
+  in-browser <em>send request</em> button often fails with a CORS error
+  against production hosts. The endpoint pages below are still useful for
+  browsing parameter shapes, response schemas, and copying generated
+  request snippets.</p>
+</div>
+```
 
-<OASpec />
+## Endpoints
+
+```@raw html
+<OASpec hideInfo />
+```

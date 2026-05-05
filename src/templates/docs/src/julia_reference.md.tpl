@@ -18,6 +18,8 @@ NoAuth
 BearerToken
 APIKey
 BasicAuth
+{{PKG}}.apply!
+{{PKG}}.build_pre_request_hook
 ```
 
 ## Errors

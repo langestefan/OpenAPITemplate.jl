@@ -51,3 +51,15 @@ end
         @test endswith(read(path, String), "src/api/** linguist-generated=true\n")
     end
 end
+
+@testset "_normalize_to_oas3! is a no-op for OAS 3 specs" begin
+    mktempdir() do dir
+        spec = joinpath(dir, "openapi.json")
+        write(spec, """{"openapi":"3.0.1","paths":{}}""")
+        before = read(spec, String)
+        OpenAPITemplate._normalize_to_oas3!(spec)
+        @test read(spec, String) == before
+        # No backup file should be created for v3 specs.
+        @test !isfile(joinpath(dir, "openapi.v2-original.json"))
+    end
+end

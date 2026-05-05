@@ -55,9 +55,13 @@ function PkgTemplates.posthook(p::VitepressDocs, t::Template, pkg_dir::AbstractS
         api_dir = joinpath(src_dir, "api")
         mkpath(api_dir)
         _write_docs_template(api_dir, "index.md", "docs/src/api/index.md.tpl", vars)
-        theme_dir = joinpath(docs_dir, ".vitepress", "theme")
+        # DocumenterVitepress reads `docs/src/.vitepress/theme/index.ts` as its
+        # theme entry point (when present, the default file is skipped). Our
+        # version extends the default theme *and* registers vitepress-openapi
+        # so the `<OASpec />` component in docs/src/api/index.md can mount.
+        theme_dir = joinpath(src_dir, ".vitepress", "theme")
         mkpath(theme_dir)
-        _write_docs_template(theme_dir, "index.js", "docs/.vitepress/theme/index.js.tpl", vars)
+        _write_docs_template(theme_dir, "index.ts", "docs/src/.vitepress/theme/index.ts.tpl", vars)
     end
 
     if p.deploy
