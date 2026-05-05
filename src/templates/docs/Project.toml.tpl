@@ -1,6 +1,7 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterVitepress = "4710194d-e776-4893-9690-8d956a29c365"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 {{PKG}} = "{{PKG_UUID}}"
 
 [sources]
@@ -9,3 +10,4 @@ DocumenterVitepress = "4710194d-e776-4893-9690-8d956a29c365"
 [compat]
 Documenter = "1"
 DocumenterVitepress = "0.2, 0.3"
+JSON = "1"
