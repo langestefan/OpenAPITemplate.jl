@@ -10,8 +10,12 @@ const SWAGGER2OPENAPI_VERSION = "7.0.8"
 
 # Direct deps the generated module pulls in (transitive deps of OpenAPI but
 # the generated `using ...` line needs them declared explicitly).
+#
+# `Dates` is a stdlib — `Pkg.add` would otherwise pin it to the scaffold-
+# time Julia version (e.g. `1.11.0` if you ran Julia 1.11), breaking CI on
+# older Julias. Explicit `compat = "1"` keeps the floor at 1.10.
 const CODEGEN_DEPS = [
-    (name = "Dates", uuid = "ade2ca70-3891-5945-98fb-dc099432e06a", compat = nothing),
+    (name = "Dates", uuid = "ade2ca70-3891-5945-98fb-dc099432e06a", compat = "1"),
     (name = "TimeZones", uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53", compat = "1"),
 ]
 
