@@ -24,6 +24,7 @@ using PkgTemplates, OpenAPITemplate
 
 t = Template(;
     user = "your-username",
+    dir = pwd(),                       # see "Output directory" below
     plugins = APIWrapper(;
         spec_url = "https://petstore3.swagger.io/api/v3/openapi.json",
     ),
@@ -34,6 +35,13 @@ t("PetstoreClient")
 `spec_url` may be omitted to scaffold a hand-written-only package, or pointed
 at a local file path. Swagger 2.0 specs are auto-converted to OpenAPI 3.0
 (the docs browser requires OAS 3+).
+
+> [!IMPORTANT]
+> **`Template` does not use your current working directory.** PkgTemplates
+> defaults `dir` to `~/.julia/dev`, so without an explicit `dir = ...` your
+> package will land in `~/.julia/dev/<PackageName>` regardless of where you
+> ran Julia. Pass `dir = pwd()` (or any absolute path) to put it elsewhere.
+> The default exists so the result is immediately usable via `]dev <name>`.
 
 ## What you get
 

@@ -25,9 +25,29 @@ export APIWrapper,
 Return the composed plugin list for scaffolding a Julia REST/JSON API wrapper
 package. Pass directly to `PkgTemplates.Template(; plugins=APIWrapper(...))`.
 
-Phase 1 wires the five sub-plugins (mostly stubs) on top of the standard
-PkgTemplates plugins. OpenAPI codegen, middleware, reliability, and docs
-integration are filled in by later phases.
+# Example
+
+```julia
+t = Template(;
+    user = "your-username",
+    dir  = pwd(),                      # ← see warning below
+    plugins = APIWrapper(; spec_url = "https://example.com/openapi.json"),
+)
+t("MyWrapper")
+```
+
+!!! warning "Output directory"
+    `Template` does not use your current working directory. PkgTemplates
+    defaults `dir` to `~/.julia/dev`, so without an explicit `dir = ...` your
+    package will land in `~/.julia/dev/<PackageName>` regardless of where
+    you ran Julia. Pass `dir = pwd()` (or any absolute path) to put it
+    elsewhere. The default exists so the result is immediately usable via
+    `]dev <name>`.
+
+The plugin list wires `OpenAPISpec`, `ClientLayer`, `Reliability`,
+`BrokenRecordTests`, and `VitepressDocs` on top of the standard PkgTemplates
+plugins (`ProjectFile`, `SrcDir`, `Readme`, `License`, `Git`, `Formatter`,
+`GitHubActions`, `Codecov`, `CompatHelper`, `TagBot`).
 """
 function APIWrapper(;
         spec_url::Union{Nothing, AbstractString} = nothing,
