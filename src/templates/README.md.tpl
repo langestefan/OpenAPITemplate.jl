@@ -131,8 +131,7 @@ Concrete checklist for moving this scaffold to a real package:
       schemes — see `OPENAPI_GENERATOR_NOTES.md` if present).
 - [ ] Customize this README — replace this section with concrete
       domain examples and a brief domain-level overview.
-- [ ] Set the `CODECOV_TOKEN` and `DOCUMENTER_KEY` secrets on GitHub if
-      you want coverage reports and docs deploys.
+- [ ] Set the `CODECOV_TOKEN` secret on GitHub if you want coverage reports.
 - [ ] When ready to publish, register the package via
       [JuliaRegistries/General](https://github.com/JuliaRegistries/General)
       using the standard `@JuliaRegistrator register()` comment flow.

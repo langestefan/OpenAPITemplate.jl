@@ -40,7 +40,6 @@ jobs:
         uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
           GKSwstype: "100"
           JULIA_DEBUG: "Documenter"
       - name: Save Julia depot cache on cancel or failure
