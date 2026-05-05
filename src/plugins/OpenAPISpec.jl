@@ -36,7 +36,8 @@ is set:
   - Records spec URL, generator version, and timestamp in `scaffold-info.toml`.
 
 `spec_url` may be an `http(s)://` URL or a local path. With `spec_url=nothing`,
-this plugin is a no-op (the rest of Phase 1 still produces a working package).
+this plugin is a no-op and the rest of the template still produces a
+working hand-written-only package.
 """
 Base.@kwdef struct OpenAPISpec <: Plugin
     spec_url::Union{Nothing, String} = nothing

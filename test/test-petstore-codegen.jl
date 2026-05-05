@@ -3,7 +3,7 @@ using OpenAPITemplate
 using PkgTemplates
 
 if get(ENV, "OPENAPITEMPLATE_RUN_CODEGEN", "0") != "1"
-    @info "Skipping Phase 2 codegen tests; set OPENAPITEMPLATE_RUN_CODEGEN=1 to enable."
+    @info "Skipping codegen tests; set OPENAPITEMPLATE_RUN_CODEGEN=1 to enable."
 else
     mktempdir() do dir
         t = Template(;

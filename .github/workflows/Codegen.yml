@@ -1,0 +1,42 @@
+name: Codegen smoke test
+
+# `OPENAPITEMPLATE_RUN_CODEGEN=1` runs `openapi-generator-cli` end to end
+# against the Petstore spec. It needs Java + Node and downloads the
+# generator JAR (~30s + ~80 MB), so it runs on its own workflow rather than
+# bloating every PR build.
+
+on:
+  push:
+    branches:
+      - main
+    tags: ["*"]
+  schedule:
+    - cron: '0 5 * * 1' # Mondays 05:00 UTC catches upstream generator drift
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  codegen:
+    name: Run codegen smoke test
+    runs-on: ubuntu-latest
+    env:
+      OPENAPITEMPLATE_RUN_CODEGEN: "1"
+      OPENAPITEMPLATE_SKIP_INNER_TEST: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
+      - uses: julia-actions/cache@v2
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1

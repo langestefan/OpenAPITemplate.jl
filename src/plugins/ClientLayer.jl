@@ -25,8 +25,8 @@ Scaffolds the hand-written ergonomic client overlay (`src/<PKG>/client/`) and
 adds the runtime dependencies (HTTP, JSON, OpenAPI) to the generated package's
 `Project.toml`.
 
-Phase 1 emits a bare `Client` struct and a module file that includes it. Auth
-strategies, middleware, and pagination land in Phase 3.
+Emits the full `client/` directory (auth, errors, retry, rate-limit, timeout,
+logging, middleware, pagination, show) and a module file that wires them in.
 """
 Base.@kwdef struct ClientLayer <: Plugin
     auth_modes::Vector{Symbol} = [:bearer]

@@ -5,7 +5,9 @@ Ergonomic wrapper around `OpenAPI.Clients.Client`. Composes an [`Auth`](@ref)
 strategy into the inner client's `pre_request_hook`. Extra `kwargs` are
 forwarded verbatim to `OpenAPI.Clients.Client`.
 
-Phase 3 surface — middleware (retry/rate-limit/timeout) lands in Phase 4.
+For retry / rate-limit / timeout / logging, compose the call with
+[`with_defaults`](@ref) or [`default_middleware`](@ref) — the `Client`
+itself stays minimal so users can pick their own stack per call.
 """
 struct Client
     inner::OpenAPI.Clients.Client

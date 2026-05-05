@@ -17,7 +17,9 @@ Scaffolds the generated package's test tree:
   - `test/test-models.jl` — round-trips a generated model through JSON (only
     emitted when codegen ran).
 
-Phase 5 will extend this with `BrokenRecord.jl` cassette infrastructure.
+An empty `test/cassettes/` directory and detect-and-skip `test-cassettes.jl`
+/ `test-mocking.jl` files are emitted up front so adding `BrokenRecord` or
+`Mocking` later only requires `pkg> add` — no further scaffolding.
 """
 Base.@kwdef struct BrokenRecordTests <: Plugin end
 

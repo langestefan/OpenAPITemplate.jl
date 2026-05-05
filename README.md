@@ -1,6 +1,7 @@
 # OpenAPITemplate.jl
 
 [![Test workflow status](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Test.yml/badge.svg?branch=main)](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Test.yml?query=branch%3Amain)
+[![Codegen workflow status](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Codegen.yml/badge.svg?branch=main)](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Codegen.yml?query=branch%3Amain)
 [![Lint workflow status](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Lint.yml/badge.svg?branch=main)](https://github.com/langestefan/OpenAPITemplate.jl/actions/workflows/Lint.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/langestefan/OpenAPITemplate.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/langestefan/OpenAPITemplate.jl)
 [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)

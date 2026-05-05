@@ -1,7 +1,7 @@
 """
     Reliability(; retry=true, rate_limit=true)
 
-Phase-4 marker plugin. The actual primitives (`RetryPolicy`, `TokenBucket`,
+Marker plugin. The actual primitives (`RetryPolicy`, `TokenBucket`,
 `with_timeout`, `with_logging`, `default_middleware`, `with_defaults`) are
 emitted by [`ClientLayer`](@ref) regardless — this plugin only records the
 configuration on `scaffold-info.toml` so future regeneration / drift checks
