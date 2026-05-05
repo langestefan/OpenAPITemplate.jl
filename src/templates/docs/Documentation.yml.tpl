@@ -2,34 +2,51 @@ name: Documentation
 
 on:
   push:
-    branches: [main]
-    tags: ['*']
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "*.toml"
+    tags: ["*"]
   pull_request:
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "*.toml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  build:
-    permissions:
-      contents: write
-      pages: write
-      pull-requests: read
-      statuses: write
+  docs:
+    name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1'
-      - uses: julia-actions/cache@v2
-      - name: Install Julia dependencies
-        run: julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Install Node dependencies
-        run: cd docs && npm install
-      - name: Build and deploy
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v2
+      - name: Load Julia packages from cache
+        id: julia-cache
+        uses: julia-actions/cache@v2
+      - name: Build and deploy docs
+        uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs --color=yes docs/make.jl
+          GKSwstype: "100"
+          JULIA_DEBUG: "Documenter"
+      - name: Save Julia depot cache on cancel or failure
+        if: cancelled() || failure()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ steps.julia-cache.outputs.cache-paths }}
+          key: ${{ steps.julia-cache.outputs.cache-key }}

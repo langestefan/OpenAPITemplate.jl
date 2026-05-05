@@ -32,7 +32,7 @@ jobs:
       - name: Re-run OpenAPI Generator
         run: julia --project=. gen/regenerate.jl
       - name: Open PR on diff
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: 'chore: regenerate src/api/ from upstream OpenAPI spec'
           branch: openapi-drift-check
