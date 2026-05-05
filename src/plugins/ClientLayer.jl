@@ -35,12 +35,34 @@ end
 # Run after stock plugins (priority 1000), before OpenAPISpec (100), before Git (5).
 PkgTemplates.priority(::ClientLayer, ::typeof(PkgTemplates.posthook)) = 200
 
-function PkgTemplates.posthook(p::ClientLayer, ::Template, pkg_dir::AbstractString)
+function PkgTemplates.posthook(p::ClientLayer, t::Template, pkg_dir::AbstractString)
     pkg = pkg_name(pkg_dir)
     _write_client_file(pkg_dir, pkg)
     _rewrite_module_file(pkg_dir, pkg)
+    _rewrite_readme(pkg_dir, pkg, String(t.user))
     _add_runtime_deps(pkg_dir)
     return nothing
+end
+
+# Extra `.gitignore` entries beyond what PkgTemplates' `Git` plugin emits.
+# Picked up by `Git`'s `gitignore(t)` aggregator.
+PkgTemplates.gitignore(::ClientLayer) = [
+    ".DS_Store",
+    "*.rej",
+    "*.bak",
+    "node_modules/",
+    "docs/build/",
+    "docs/.vitepress/cache/",
+    "docs/.vitepress/dist/",
+    "docs/package-lock.json",
+]
+
+function _rewrite_readme(pkg_dir::AbstractString, pkg::AbstractString, user::AbstractString)
+    src = joinpath(TEMPLATES_DIR, "README.md.tpl")
+    dst = joinpath(pkg_dir, "README.md")
+    text = read(src, String)
+    text = replace(text, "{{USER}}" => user)
+    return write(dst, _render(text, pkg))
 end
 
 function _write_client_file(pkg_dir::AbstractString, pkg::AbstractString)
