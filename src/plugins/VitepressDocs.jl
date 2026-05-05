@@ -32,7 +32,7 @@ function PkgTemplates.posthook(p::VitepressDocs, t::Template, pkg_dir::AbstractS
     user = String(t.user)
     has_spec = isfile(joinpath(pkg_dir, "spec", "openapi.json"))
 
-    vars = Dict{String,String}(
+    vars = Dict{String, String}(
         "PKG" => pkg,
         "PKG_LOWER" => lowercase(pkg),
         "PKG_UPPER" => uppercase(pkg),
@@ -74,19 +74,19 @@ function PkgTemplates.posthook(p::VitepressDocs, t::Template, pkg_dir::AbstractS
 end
 
 function _write_docs_template(
-    dst_dir::AbstractString,
-    dst_name::AbstractString,
-    tpl_subpath::AbstractString,
-    vars::Dict{String,String},
-)
-    src = joinpath(OpenAPITemplate.TEMPLATES_DIR, tpl_subpath)
-    write(
+        dst_dir::AbstractString,
+        dst_name::AbstractString,
+        tpl_subpath::AbstractString,
+        vars::Dict{String, String},
+    )
+    src = joinpath(TEMPLATES_DIR, tpl_subpath)
+    return write(
         joinpath(dst_dir, dst_name),
         _render_kv_docs(read(src, String), vars),
     )
 end
 
-function _render_kv_docs(text::AbstractString, vars::Dict{String,String})
+function _render_kv_docs(text::AbstractString, vars::Dict{String, String})
     for (k, v) in vars
         text = replace(text, "{{$k}}" => v)
     end
@@ -94,5 +94,7 @@ function _render_kv_docs(text::AbstractString, vars::Dict{String,String})
 end
 
 _read_pkg_uuid_for_docs(pkg_dir::AbstractString) =
-    get(TOML.parsefile(joinpath(pkg_dir, "Project.toml")), "uuid",
-        "00000000-0000-0000-0000-000000000000")
+    get(
+    TOML.parsefile(joinpath(pkg_dir, "Project.toml")), "uuid",
+    "00000000-0000-0000-0000-000000000000"
+)

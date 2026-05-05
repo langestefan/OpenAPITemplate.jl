@@ -33,7 +33,7 @@ at a local file path. Swagger 2.0 specs are auto-converted to OpenAPI 3.0
 
 A scaffolded package ships with:
 
-**Runtime surface**
+### Runtime surface
 
 - `Client` wrapping `OpenAPI.Clients.Client` with composable middleware
 - `NoAuth`, `BearerToken`, `APIKey`, `BasicAuth` strategies + `resolve_credentials`
@@ -47,7 +47,7 @@ A scaffolded package ships with:
   `paginate_pagenum`)
 - Pretty multi-line `show` for `OpenAPI.APIModel` subtypes
 
-**Tooling**
+### Tooling
 
 - `gen/regenerate.jl` for re-running codegen against an updated spec
 - `.github/workflows/regen-check.yml` (weekly + manual) opens a PR if the

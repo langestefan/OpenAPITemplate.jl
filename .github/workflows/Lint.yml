@@ -1,0 +1,48 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+    tags: ["*"]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  lint:
+    name: prek
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - name: Use Julia cache
+        uses: julia-actions/cache@v2
+      - name: Build package (required for ExplicitImports)
+        uses: julia-actions/julia-buildpkg@v1
+      - name: Install ExplicitImports
+        run: julia -e 'using Pkg; pkg"add ExplicitImports"'
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install prek
+        run: pip install prek
+      - name: Run prek
+        run: SKIP=no-commit-to-branch prek run --all-files
+
+  link-checker:
+    name: Link checker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: true
+          args: --config '.lychee.toml' .

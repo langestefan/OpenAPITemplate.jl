@@ -1,6 +1,6 @@
-using Pkg
+using Pkg: Pkg, PackageSpec
 using PkgTemplates: with_project
-using TOML
+using TOML: TOML
 
 const HTTP_UUID = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 const JSON_UUID = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
@@ -46,17 +46,20 @@ end
 function _write_client_file(pkg_dir::AbstractString, pkg::AbstractString)
     client_dir = joinpath(pkg_dir, "src", "client")
     mkpath(client_dir)
-    for fname in ("auth.jl", "errors.jl", "logging.jl", "retry.jl", "rate_limit.jl",
-                  "timeout.jl", "middleware.jl", "Client.jl", "pagination.jl", "show.jl")
-        src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "client", fname * ".tpl")
+    for fname in (
+            "auth.jl", "errors.jl", "logging.jl", "retry.jl", "rate_limit.jl",
+            "timeout.jl", "middleware.jl", "Client.jl", "pagination.jl", "show.jl",
+        )
+        src = joinpath(TEMPLATES_DIR, "client", fname * ".tpl")
         write(joinpath(client_dir, fname), _render(read(src, String), pkg))
     end
+    return
 end
 
 function _rewrite_module_file(pkg_dir::AbstractString, pkg::AbstractString)
-    src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "module.jl.tpl")
+    src = joinpath(TEMPLATES_DIR, "module.jl.tpl")
     dst = joinpath(pkg_dir, "src", "$(pkg).jl")
-    write(dst, _render(read(src, String), pkg))
+    return write(dst, _render(read(src, String), pkg))
 end
 
 function _render(text::AbstractString, pkg::AbstractString)
@@ -70,17 +73,17 @@ function _add_runtime_deps(pkg_dir::AbstractString)
     with_project(pkg_dir) do
         Pkg.add(specs)
     end
-    _set_compat(pkg_dir)
+    return _set_compat(pkg_dir)
 end
 
 function _set_compat(pkg_dir::AbstractString)
     path = joinpath(pkg_dir, "Project.toml")
     toml = TOML.parsefile(path)
-    compat = get!(toml, "compat", Dict{String,Any}())
+    compat = get!(toml, "compat", Dict{String, Any}())
     for d in RUNTIME_DEPS
         compat[d.name] = d.compat
     end
-    open(path, "w") do io
+    return open(path, "w") do io
         TOML.print(io, toml; sorted = true)
     end
 end

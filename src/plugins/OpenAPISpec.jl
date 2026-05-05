@@ -1,7 +1,7 @@
 using Downloads: download
 using Dates: now
-using TOML
-using Pkg
+using TOML: TOML
+using Pkg: Pkg, PackageSpec
 using PkgTemplates: with_project
 
 const GENERATOR_VERSION = "7.10.0"
@@ -39,7 +39,7 @@ is set:
 this plugin is a no-op (the rest of Phase 1 still produces a working package).
 """
 Base.@kwdef struct OpenAPISpec <: Plugin
-    spec_url::Union{Nothing,String} = nothing
+    spec_url::Union{Nothing, String} = nothing
     gen_dir::String = "src/api"
     generator_version::String = GENERATOR_VERSION
 end
@@ -53,7 +53,7 @@ function PkgTemplates.posthook(p::OpenAPISpec, ::Template, pkg_dir::AbstractStri
 
     Sys.which("java") === nothing && error(
         "OpenAPISpec: `java` not found on PATH. Install Java 11+ " *
-        "(https://adoptium.net/) or scaffold without `spec_url` to skip codegen.",
+            "(https://adoptium.net/) or scaffold without `spec_url` to skip codegen.",
     )
 
     pkg = pkg_name(pkg_dir)
@@ -74,10 +74,10 @@ function PkgTemplates.posthook(p::OpenAPISpec, ::Template, pkg_dir::AbstractStri
 end
 
 function _write_drift_check_workflow(pkg_dir::AbstractString)
-    src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "gen", "regen-check.yml.tpl")
+    src = joinpath(TEMPLATES_DIR, "gen", "regen-check.yml.tpl")
     dst = joinpath(pkg_dir, ".github", "workflows", "regen-check.yml")
     mkpath(dirname(dst))
-    cp(src, dst; force = true)
+    return cp(src, dst; force = true)
 end
 
 function _add_codegen_deps(pkg_dir::AbstractString)
@@ -87,12 +87,12 @@ function _add_codegen_deps(pkg_dir::AbstractString)
     end
     path = joinpath(pkg_dir, "Project.toml")
     toml = TOML.parsefile(path)
-    compat = get!(toml, "compat", Dict{String,Any}())
+    compat = get!(toml, "compat", Dict{String, Any}())
     for d in CODEGEN_DEPS
         d.compat === nothing && continue
         compat[d.name] = d.compat
     end
-    open(path, "w") do io
+    return open(path, "w") do io
         TOML.print(io, toml; sorted = true)
     end
 end
@@ -102,7 +102,7 @@ end
 
 function _save_spec(spec_url::AbstractString, dst::AbstractString)
     mkpath(dirname(dst))
-    if startswith(spec_url, r"^https?://"i)
+    return if startswith(spec_url, r"^https?://"i)
         download(spec_url, dst)
     elseif isfile(spec_url)
         cp(spec_url, dst; force = true)
@@ -122,12 +122,12 @@ function _normalize_to_oas3!(spec_path::AbstractString)
     # spec since `swagger`/`openapi` is a top-level field.
     sample = head[1:min(1024, lastindex(head))]
     is_v2 = occursin(r"\"swagger\"\s*:\s*\"2\.", sample) &&
-            !occursin(r"\"openapi\"\s*:\s*\"3", sample)
+        !occursin(r"\"openapi\"\s*:\s*\"3", sample)
     is_v2 || return nothing
 
     Sys.which("npx") === nothing && error(
         "OpenAPISpec: spec is Swagger 2.0; converting to OpenAPI 3.0 needs " *
-        "`npx` (Node 18+). Install Node or feed an OAS 3.x spec.",
+            "`npx` (Node 18+). Install Node or feed an OAS 3.x spec.",
     )
 
     backup = replace(spec_path, r"\.json$" => ".v2-original.json")
@@ -135,51 +135,61 @@ function _normalize_to_oas3!(spec_path::AbstractString)
     cmd = `npx --yes swagger2openapi@$(SWAGGER2OPENAPI_VERSION) $spec_path -o $spec_path`
     run(cmd)
     @info "OpenAPISpec: converted Swagger 2.0 → OpenAPI 3.0 (original saved as " *
-          "`spec/$(basename(backup))`). The v3 form is required for the " *
-          "Vitepress REST API browser."
+        "`spec/$(basename(backup))`). The v3 form is required for the " *
+        "Vitepress REST API browser."
     return nothing
 end
 
 function _write_gen_files(
-    pkg_dir::AbstractString,
-    api_pkg::AbstractString,
-    spec_url::AbstractString,
-    generator_version::AbstractString,
-)
+        pkg_dir::AbstractString,
+        api_pkg::AbstractString,
+        spec_url::AbstractString,
+        generator_version::AbstractString,
+    )
     gen_dir = joinpath(pkg_dir, "gen")
     mkpath(gen_dir)
 
-    config_src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "gen", "openapi-config.json.tpl")
+    config_src = joinpath(TEMPLATES_DIR, "gen", "openapi-config.json.tpl")
     config_dst = joinpath(gen_dir, "openapi-config.json")
-    write(config_dst, _render_kv(read(config_src, String), Dict(
-        "API_PKG" => api_pkg,
-    )))
+    write(
+        config_dst, _render_kv(
+            read(config_src, String), Dict(
+                "API_PKG" => api_pkg,
+            )
+        )
+    )
 
-    regen_src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "gen", "regenerate.jl.tpl")
+    regen_src = joinpath(TEMPLATES_DIR, "gen", "regenerate.jl.tpl")
     regen_dst = joinpath(gen_dir, "regenerate.jl")
-    write(regen_dst, _render_kv(read(regen_src, String), Dict(
-        "API_PKG" => api_pkg,
-        "SPEC_URL" => spec_url,
-        "GENERATOR_VERSION" => generator_version,
-        "NPM_WRAPPER_VERSION" => NPM_WRAPPER_VERSION,
-    )))
+    return write(
+        regen_dst, _render_kv(
+            read(regen_src, String), Dict(
+                "API_PKG" => api_pkg,
+                "SPEC_URL" => spec_url,
+                "GENERATOR_VERSION" => generator_version,
+                "NPM_WRAPPER_VERSION" => NPM_WRAPPER_VERSION,
+            )
+        )
+    )
 end
 
 function _run_codegen(
-    pkg_dir::AbstractString,
-    api_pkg::AbstractString,
-    spec_path::AbstractString,
-    generator_version::AbstractString,
-)
+        pkg_dir::AbstractString,
+        api_pkg::AbstractString,
+        spec_path::AbstractString,
+        generator_version::AbstractString,
+    )
     api_target = joinpath(pkg_dir, "src", "api")
-    mktempdir() do tmp
+    return mktempdir() do tmp
         out_dir = joinpath(tmp, "out")
-        cmd = Cmd(`npx --yes @openapitools/openapi-generator-cli@$(NPM_WRAPPER_VERSION) generate
+        cmd = Cmd(
+            `npx --yes @openapitools/openapi-generator-cli@$(NPM_WRAPPER_VERSION) generate
                    -i $spec_path
                    -g julia-client
                    -o $out_dir
                    --additional-properties=packageName=$(api_pkg),exportModels=true,exportOperations=true`;
-                  dir = tmp)
+            dir = tmp
+        )
         env = copy(ENV)
         env["OPENAPI_GENERATOR_VERSION"] = generator_version
         run(setenv(cmd, env))
@@ -194,22 +204,26 @@ function _run_codegen(
 end
 
 function _rewrite_module_with_api(
-    pkg_dir::AbstractString,
-    pkg::AbstractString,
-    api_pkg::AbstractString,
-)
-    src = joinpath(OpenAPITemplate.TEMPLATES_DIR, "module-with-api.jl.tpl")
+        pkg_dir::AbstractString,
+        pkg::AbstractString,
+        api_pkg::AbstractString,
+    )
+    src = joinpath(TEMPLATES_DIR, "module-with-api.jl.tpl")
     dst = joinpath(pkg_dir, "src", "$(pkg).jl")
-    write(dst, _render_kv(read(src, String), Dict(
-        "PKG" => pkg,
-        "API_PKG" => api_pkg,
-    )))
+    return write(
+        dst, _render_kv(
+            read(src, String), Dict(
+                "PKG" => pkg,
+                "API_PKG" => api_pkg,
+            )
+        )
+    )
 end
 
 function _add_gitattributes(pkg_dir::AbstractString)
     path = joinpath(pkg_dir, ".gitattributes")
     line = "src/api/** linguist-generated=true\n"
-    if isfile(path)
+    return if isfile(path)
         contents = read(path, String)
         occursin(line, contents) && return nothing
         open(path, "a") do io
@@ -222,22 +236,22 @@ function _add_gitattributes(pkg_dir::AbstractString)
 end
 
 function _write_scaffold_info(
-    pkg_dir::AbstractString,
-    spec_url::AbstractString,
-    generator_version::AbstractString,
-)
-    info = Dict{String,Any}(
+        pkg_dir::AbstractString,
+        spec_url::AbstractString,
+        generator_version::AbstractString,
+    )
+    info = Dict{String, Any}(
         "spec_path" => "spec/openapi.json",
         "spec_url" => spec_url,
         "generator_version" => generator_version,
         "generated_at" => string(now()),
     )
-    open(joinpath(pkg_dir, "scaffold-info.toml"), "w") do io
+    return open(joinpath(pkg_dir, "scaffold-info.toml"), "w") do io
         TOML.print(io, info; sorted = true)
     end
 end
 
-function _render_kv(text::AbstractString, vars::Dict{<:AbstractString,<:AbstractString})
+function _render_kv(text::AbstractString, vars::Dict{<:AbstractString, <:AbstractString})
     for (k, v) in vars
         text = replace(text, "{{$k}}" => v)
     end

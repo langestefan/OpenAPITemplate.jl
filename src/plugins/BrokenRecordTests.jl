@@ -1,3 +1,5 @@
+using TOML: TOML
+
 """
     BrokenRecordTests()
 
@@ -30,45 +32,73 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
     test_dir = joinpath(pkg_dir, "test")
     mkpath(test_dir)
 
-    _write_test_file(test_dir, "Project.toml", "test/Project.toml.tpl",
-                     Dict{String,String}("PKG" => pkg, "PKG_UUID" => _read_pkg_uuid(pkg_dir)))
-    _write_test_file(test_dir, "runtests.jl", "test/runtests.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-linting.jl", "test/test-linting.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-client-construction.jl",
-                     "test/test-client-construction.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-auth.jl",
-                     "test/test-auth.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-pagination.jl",
-                     "test/test-pagination.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-show.jl",
-                     "test/test-show.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-errors.jl",
-                     "test/test-errors.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-retry.jl",
-                     "test/test-retry.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-rate-limit.jl",
-                     "test/test-rate-limit.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-timeout.jl",
-                     "test/test-timeout.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-middleware.jl",
-                     "test/test-middleware.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-cassettes.jl",
-                     "test/test-cassettes.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
-    _write_test_file(test_dir, "test-mocking.jl",
-                     "test/test-mocking.jl.tpl",
-                     Dict{String,String}("PKG" => pkg))
+    _write_test_file(
+        test_dir, "Project.toml", "test/Project.toml.tpl",
+        Dict{String, String}("PKG" => pkg, "PKG_UUID" => _read_pkg_uuid(pkg_dir))
+    )
+    _write_test_file(
+        test_dir, "runtests.jl", "test/runtests.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-linting.jl", "test/test-linting.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-client-construction.jl",
+        "test/test-client-construction.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-auth.jl",
+        "test/test-auth.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-pagination.jl",
+        "test/test-pagination.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-show.jl",
+        "test/test-show.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-errors.jl",
+        "test/test-errors.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-retry.jl",
+        "test/test-retry.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-rate-limit.jl",
+        "test/test-rate-limit.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-timeout.jl",
+        "test/test-timeout.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-middleware.jl",
+        "test/test-middleware.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-cassettes.jl",
+        "test/test-cassettes.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
+    _write_test_file(
+        test_dir, "test-mocking.jl",
+        "test/test-mocking.jl.tpl",
+        Dict{String, String}("PKG" => pkg)
+    )
     # `test/cassettes/` is the BrokenRecord storage dir. Add a `.gitkeep`
     # so the directory exists even before any cassettes have been recorded.
     cassette_dir = joinpath(test_dir, "cassettes")
@@ -77,31 +107,37 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
 
     if has_api
         api_pkg = pkg * "API"
-        _write_test_file(test_dir, "test-scaffold-metadata.jl",
-                         "test/test-scaffold-metadata.jl.tpl",
-                         Dict{String,String}("PKG" => pkg))
-        _write_test_file(test_dir, "test-models.jl",
-                         "test/test-models.jl.tpl",
-                         Dict{String,String}("PKG" => pkg, "API_PKG" => api_pkg))
+        _write_test_file(
+            test_dir, "test-scaffold-metadata.jl",
+            "test/test-scaffold-metadata.jl.tpl",
+            Dict{String, String}("PKG" => pkg)
+        )
+        _write_test_file(
+            test_dir, "test-models.jl",
+            "test/test-models.jl.tpl",
+            Dict{String, String}("PKG" => pkg, "API_PKG" => api_pkg)
+        )
     end
     return nothing
 end
 
 function _write_test_file(
-    test_dir::AbstractString,
-    dst_name::AbstractString,
-    tpl_subpath::AbstractString,
-    vars::Dict{String,String},
-)
-    write(
+        test_dir::AbstractString,
+        dst_name::AbstractString,
+        tpl_subpath::AbstractString,
+        vars::Dict{String, String},
+    )
+    return write(
         joinpath(test_dir, dst_name),
         _render_kv(
-            read(joinpath(OpenAPITemplate.TEMPLATES_DIR, tpl_subpath), String),
+            read(joinpath(TEMPLATES_DIR, tpl_subpath), String),
             vars,
         ),
     )
 end
 
 _read_pkg_uuid(pkg_dir::AbstractString) =
-    get(TOML.parsefile(joinpath(pkg_dir, "Project.toml")), "uuid",
-        "00000000-0000-0000-0000-000000000000")
+    get(
+    TOML.parsefile(joinpath(pkg_dir, "Project.toml")), "uuid",
+    "00000000-0000-0000-0000-000000000000"
+)

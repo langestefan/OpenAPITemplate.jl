@@ -50,8 +50,8 @@ end
         @test {{PKG}}.resolve_credentials({{PKG}}.BearerToken; env_prefix = "CREDTEST").token == "from-env"
         ak = {{PKG}}.resolve_credentials({{PKG}}.APIKey; env_prefix = "CREDTEST")
         @test ak.key == "secret" && ak.header == "X-Custom"
-        ba = {{PKG}}.resolve_credentials({{PKG}}.BasicAuth; env_prefix = "CREDTEST")
-        @test ba.username == "u" && ba.password == "p"
+        basic = {{PKG}}.resolve_credentials({{PKG}}.BasicAuth; env_prefix = "CREDTEST")
+        @test basic.username == "u" && basic.password == "p"
     end
 end
 

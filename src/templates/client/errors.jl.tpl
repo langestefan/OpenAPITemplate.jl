@@ -54,7 +54,7 @@ end
     RateLimitError(status=429; retry_after=nothing, body="")
 
 A 429 response. `retry_after` is the parsed `Retry-After` header value in
-seconds, or `nothing` when absent / unparseable.
+seconds, or `nothing` when absent / unparsable.
 """
 struct RateLimitError <: APIError
     status::Int

@@ -1,7 +1,10 @@
 module OpenAPITemplate
 
-using PkgTemplates
-using PkgTemplates: Plugin, Template, pkg_name
+using PkgTemplates: PkgTemplates, Codecov, CompatHelper, Formatter, Git,
+    GitHubActions, License, Plugin, ProjectFile, Readme, SrcDir, TagBot,
+    Template, pkg_name
+
+const TEMPLATES_DIR = joinpath(@__DIR__, "templates")
 
 include("plugins/OpenAPISpec.jl")
 include("plugins/ClientLayer.jl")
@@ -11,8 +14,6 @@ include("plugins/VitepressDocs.jl")
 
 export APIWrapper,
     OpenAPISpec, ClientLayer, Reliability, BrokenRecordTests, VitepressDocs
-
-const TEMPLATES_DIR = joinpath(@__DIR__, "templates")
 
 """
     APIWrapper(; spec_url=nothing,
@@ -29,12 +30,12 @@ PkgTemplates plugins. OpenAPI codegen, middleware, reliability, and docs
 integration are filled in by later phases.
 """
 function APIWrapper(;
-    spec_url::Union{Nothing,AbstractString} = nothing,
-    auth_modes::Vector{Symbol} = [:bearer],
-    retry::Bool = true,
-    rate_limit::Bool = true,
-    deploy_docs::Bool = true,
-)
+        spec_url::Union{Nothing, AbstractString} = nothing,
+        auth_modes::Vector{Symbol} = [:bearer],
+        retry::Bool = true,
+        rate_limit::Bool = true,
+        deploy_docs::Bool = true,
+    )
     return Any[
         # Disable the default `Tests` plugin — `BrokenRecordTests` owns the
         # generated package's test scaffolding.

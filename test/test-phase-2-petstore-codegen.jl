@@ -39,8 +39,12 @@ else
         # Java-free: load the package without `java` on PATH.
         load_cmd = `julia --project=. -e 'using PetstoreClient; @assert isdefined(PetstoreClient, :Pet); @assert isdefined(PetstoreClient, :PetApi); println("ok")'`
         env = copy(ENV)
-        env["PATH"] = join(filter(p -> !occursin("java", lowercase(p)),
-                                  split(get(env, "PATH", ""), ':')), ':')
+        env["PATH"] = join(
+            filter(
+                p -> !occursin("java", lowercase(p)),
+                split(get(env, "PATH", ""), ':')
+            ), ':'
+        )
         delete!(env, "JAVA_HOME")
         delete!(env, "JULIA_LOAD_PATH")
         delete!(env, "JULIA_PROJECT")
@@ -50,10 +54,14 @@ else
             test_env = copy(ENV)
             delete!(test_env, "JULIA_LOAD_PATH")
             delete!(test_env, "JULIA_PROJECT")
-            run(setenv(Cmd(
-                `julia --project=. -e 'using Pkg; Pkg.test()'`;
-                dir = pkg_dir,
-            ), test_env))
+            run(
+                setenv(
+                    Cmd(
+                        `julia --project=. -e 'using Pkg; Pkg.test()'`;
+                        dir = pkg_dir,
+                    ), test_env
+                )
+            )
         end
     end
 end

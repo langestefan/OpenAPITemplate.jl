@@ -37,9 +37,13 @@ mktempdir() do dir
         # `--project=.` resolves cleanly against stdlib.
         delete!(env, "JULIA_LOAD_PATH")
         delete!(env, "JULIA_PROJECT")
-        run(setenv(Cmd(
-            `julia --project=. -e 'using Pkg; Pkg.test()'`;
-            dir = pkg_dir,
-        ), env))
+        run(
+            setenv(
+                Cmd(
+                    `julia --project=. -e 'using Pkg; Pkg.test()'`;
+                    dir = pkg_dir,
+                ), env
+            )
+        )
     end
 end

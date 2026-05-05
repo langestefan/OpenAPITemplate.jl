@@ -1,0 +1,56 @@
+repos:
+  - repo: local
+    hooks:
+      # Prevent committing .rej files
+      - id: forbidden-files
+        name: forbidden files
+        entry: found Copier update rejection files; review them and remove them
+        language: fail
+        files: "\\.rej$"
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: no-commit-to-branch
+      - id: pretty-format-json
+        args: [--autofix, --indent=2]
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+        args: [--assume-in-merge]
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.48.0
+    hooks:
+      - id: markdownlint-fix
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.21.0
+    hooks:
+      - id: yamlfmt
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.38.0
+    hooks:
+      - id: yamllint
+  - repo: https://github.com/ericphanson/ExplicitImports.jl
+    rev: v1.15.0
+    hooks:
+      - id: explicit-imports
+        name: ExplicitImports checks
+        # PkgTemplates intentionally exposes its plugin API (Plugin, pkg_name,
+        # with_project, posthook, priority) without `public` declarations, so
+        # exclude the public-only checks for both imports and qualified access.
+        args:
+          - --print
+          - --checklist
+          - exclude_all_explicit_imports_are_public,exclude_all_qualified_accesses_are_public
+  - repo: https://github.com/fredrikekre/runic-pre-commit
+    rev: v2.2.0
+    hooks:
+      - id: runic
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.46.0
+    hooks:
+      - id: typos
