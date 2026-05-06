@@ -107,6 +107,25 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
     mkpath(cassette_dir)
     write(joinpath(cassette_dir, ".gitkeep"), "")
 
+    # Linting tests load Aqua and JET via `Base.require` so they detect-and-skip
+    # if absent — but the default scaffold ships with both available so the
+    # `test-linting.jl` checks actually run. End users who want to skip can set
+    # `OPENAPI_SKIP_LINTING=1` (handled in `runtests.jl`) or `pkg> rm` them.
+    _add_test_deps(
+        test_dir, [
+            (
+                name = "Aqua",
+                uuid = "4c88cf16-eb10-579e-8560-4a9242c79595",
+                compat = "0.8",
+            ),
+            (
+                name = "JET",
+                uuid = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b",
+                compat = "0.9, 0.10, 0.11",
+            ),
+        ]
+    )
+
     if has_api
         api_pkg = pkg * "API"
         _write_test_file(
@@ -131,18 +150,49 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
             ]
         )
     end
+
+    # Patch the CI workflow PkgTemplates' GitHubActions plugin generated so
+    # that a Julia pre-release failure doesn't gate merges. JET is the usual
+    # culprit: it tracks Julia minor versions tightly and a brand-new pre
+    # often has no compatible JET release yet, which makes Pkg resolution
+    # in `Pkg.test` unsatisfiable.
+    _allow_pre_to_fail(joinpath(pkg_dir, ".github", "workflows", "CI.yml"))
     return nothing
 end
 
+# Inject `continue-on-error: ${{ matrix.version == 'pre' }}` onto the
+# `julia-actions/julia-runtest@v1` step. Idempotent and a no-op if the file
+# is missing or the step is absent (e.g. user disabled GitHubActions).
+function _allow_pre_to_fail(ci_path::AbstractString)
+    isfile(ci_path) || return nothing
+    src = read(ci_path, String)
+    occursin("continue-on-error: \${{ matrix.version == 'pre' }}", src) &&
+        return nothing
+    needle = "      - uses: julia-actions/julia-runtest@v1"
+    occursin(needle, src) || return nothing
+    replacement = needle * """\n        # JET tracks Julia minor versions tightly and may not yet ship support
+        # for the current pre-release. Run the suite anyway (we want the early
+        # warning) but don't gate merges on a Julia-pre failure.
+        continue-on-error: \${{ matrix.version == 'pre' }}"""
+    return write(ci_path, replace(src, needle => replacement; count = 1))
+end
+
+# Adds entries to `test/Project.toml`'s `[deps]` and optionally `[compat]`.
+# Each NamedTuple must have `name` and `uuid`; a `compat` field is honoured
+# when present and pins the version range.
 function _add_test_deps(
         test_dir::AbstractString,
-        deps::Vector{<:NamedTuple{(:name, :uuid)}},
+        deps::Vector{<:NamedTuple},
     )
     path = joinpath(test_dir, "Project.toml")
     toml = TOML.parsefile(path)
     deps_table = get!(toml, "deps", Dict{String, Any}())
+    compat_table = get!(toml, "compat", Dict{String, Any}())
     for d in deps
         deps_table[d.name] = d.uuid
+        if hasproperty(d, :compat) && d.compat !== nothing
+            compat_table[d.name] = d.compat
+        end
     end
     return open(path, "w") do io
         TOML.print(io, toml; sorted = true)

@@ -1,9 +1,10 @@
 using {{PKG}}
 using Test
 
-# Aqua and JET are NOT default deps of test/Project.toml — install on demand:
+# Aqua and JET are scaffolded into test/Project.toml by default. To drop them:
 #   pkg> activate test
-#   pkg> add Aqua@0.8 JET@0.11
+#   pkg> rm Aqua JET
+# The detect-and-skip below makes that graceful (no test failure).
 
 let aqua_id = Base.identify_package("Aqua")
     if aqua_id === nothing
@@ -11,7 +12,11 @@ let aqua_id = Base.identify_package("Aqua")
     else
         Aqua = Base.require(aqua_id)
         @testset "Aqua" begin
-            Aqua.test_all({{PKG}}; ambiguities = false, stale_deps = false)
+            # `Base.require` advances the world; without `invokelatest` Julia
+            # 1.12 refuses to dispatch to a method whose world is newer than
+            # the call site's.
+            Base.invokelatest(Aqua.test_all, {{PKG}};
+                ambiguities = false, stale_deps = false)
         end
     end
 end
@@ -23,7 +28,8 @@ if v"1.12" <= VERSION < v"1.13"
         else
             JET = Base.require(jet_id)
             @testset "JET" begin
-                JET.test_package({{PKG}}; target_modules = ({{PKG}},))
+                Base.invokelatest(JET.test_package, {{PKG}};
+                    target_modules = ({{PKG}},))
             end
         end
     end

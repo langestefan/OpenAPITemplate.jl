@@ -19,20 +19,22 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 # by 1.10, which would then try to resolve {{PKG}} from the registry and
 # fail with "has no known versions".
 
-# Aqua and JET are NOT listed by default — Aqua is moderately heavy and JET
-# pulls in Revise + JuliaInterpreter + JuliaSyntax (~1.5 GB precompile).
-# Install on demand to enable the linting tests:
+# Aqua and JET are added by `BrokenRecordTests`'s posthook so the linting
+# tests in `test-linting.jl` actually run on every scaffolded package. To
+# skip linting (e.g. on a slow CI runner), set `OPENAPI_SKIP_LINTING=1` —
+# `runtests.jl` honours that flag without touching the deps. To drop them
+# entirely:
 #
 #   pkg> activate test
-#   pkg> add Aqua@0.8 JET@0.11
+#   pkg> rm Aqua JET
 #
-# If they are missing, `test-linting.jl` detects this and emits an `@info`
-# message instead of failing. To always skip linting, set
-# `OPENAPI_SKIP_LINTING=1`.
+# `test-linting.jl` uses `Base.identify_package` so the deletion is
+# graceful — the testset emits an `@info` and skips rather than failing.
 #
-# BrokenRecord, Mocking, and ReTestItems are also opt-in for the same
-# reason. Install when you want to use cassette playback / mocked HTTP /
-# parallel test items:
+# BrokenRecord, Mocking, and ReTestItems are opt-in: Aqua is light, JET
+# is acceptable, but BrokenRecord/Mocking/ReTestItems are heavier and
+# rarely all wanted. Install when you want cassette playback / mocked
+# HTTP / parallel test items:
 #
 #   pkg> activate test
 #   pkg> add BrokenRecord@0.1 Mocking@0.8 ReTestItems@1
