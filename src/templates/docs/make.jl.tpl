@@ -89,15 +89,14 @@ makedocs(;
         repo = "github.com/{{USER}}/{{PKG}}.jl",
         devbranch = "main",
         devurl = "dev",
+        build_vitepress = true,
     ),
     pages = PAGES,
     warnonly = true,
 )
 
-deploydocs(;
+DocumenterVitepress.deploydocs(;
     repo = "github.com/{{USER}}/{{PKG}}.jl",
-    target = "build",
-    branch = "gh-pages",
     devbranch = "main",
     push_preview = true,
 )
