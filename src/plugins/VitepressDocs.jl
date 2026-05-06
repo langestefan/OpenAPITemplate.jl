@@ -63,6 +63,17 @@ function PkgTemplates.posthook(p::VitepressDocs, t::Template, pkg_dir::AbstractS
         theme_dir = joinpath(src_dir, ".vitepress", "theme")
         mkpath(theme_dir)
         _write_docs_template(theme_dir, "index.ts", "docs/src/.vitepress/theme/index.ts.tpl", vars)
+
+        # Populate `docs/src/api/<Tag>.md` once at scaffold time. Previously
+        # `docs/make.jl` re-walked the spec on every build, which churned
+        # files in a source tree (noisy `git status` after every `Pkg.build`
+        # of the docs). Now they're committed source: regenerated only when
+        # the spec changes, via `gen/regenerate.jl` (which calls the same
+        # helper after codegen) or by running
+        # `julia --project gen/emit_api_pages.jl spec/openapi.json docs/src/api`
+        # directly. The function is `include`-defined in this module via
+        # `OpenAPITemplate.jl/src/api_pages.jl` (single source of truth).
+        emit_api_pages(joinpath(pkg_dir, "spec", "openapi.json"), api_dir)
     end
 
     if p.deploy

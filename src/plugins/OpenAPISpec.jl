@@ -166,7 +166,7 @@ function _write_gen_files(
 
     regen_src = joinpath(TEMPLATES_DIR, "gen", "regenerate.jl.tpl")
     regen_dst = joinpath(gen_dir, "regenerate.jl")
-    return write(
+    write(
         regen_dst, _render_kv(
             read(regen_src, String), Dict(
                 "API_PKG" => api_pkg,
@@ -176,6 +176,12 @@ function _write_gen_files(
             )
         )
     )
+
+    # Single-source copy of OpenAPITemplate's own `src/api_pages.jl`. Same
+    # file is `include`'d by this package's plugin code (so VitepressDocs
+    # can call `emit_api_pages` at scaffold time) and runnable as a script
+    # from the user's `gen/regenerate.jl`. No template substitution needed.
+    return cp(API_PAGES_SRC, joinpath(gen_dir, "emit_api_pages.jl"); force = true)
 end
 
 function _run_codegen(

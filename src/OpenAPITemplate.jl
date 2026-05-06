@@ -5,6 +5,13 @@ using PkgTemplates: PkgTemplates, Codecov, CompatHelper, Formatter, Git,
     Template, pkg_name
 
 const TEMPLATES_DIR = joinpath(@__DIR__, "templates")
+const API_PAGES_SRC = joinpath(@__DIR__, "api_pages.jl")
+
+# Defines `emit_api_pages(spec_path, dst_dir)` in this module's namespace.
+# The same file is `cp`'d into user packages as `gen/emit_api_pages.jl` so
+# the function can also be re-run from `gen/regenerate.jl` whenever the
+# spec changes.
+include("api_pages.jl")
 
 include("plugins/OpenAPISpec.jl")
 include("plugins/ClientLayer.jl")
