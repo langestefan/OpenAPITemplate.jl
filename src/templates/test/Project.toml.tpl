@@ -1,9 +1,16 @@
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 OpenAPI = "d5e62ea6-ddf3-4d43-8e4c-ad5e6c8bfd7d"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+# `Dates` is a stdlib but Julia 1.10 still requires it in [deps] when imported
+# from any non-default project. Listed unconditionally — generated wrappers
+# almost always interact with timestamps, and stdlib deps cost nothing.
+# `TimeZones` is added by `OpenAPISpec`'s posthook only when codegen ran,
+# matching how it appears in the package's own Project.toml.
 
 # Note: the package being tested ({{PKG}}) is NOT listed here.
 # `Pkg.test` injects it into the test sandbox automatically via `develop`

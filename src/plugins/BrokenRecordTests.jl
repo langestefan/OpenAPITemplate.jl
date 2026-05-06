@@ -119,8 +119,34 @@ function PkgTemplates.posthook(::BrokenRecordTests, ::Template, pkg_dir::Abstrac
             "test/test-models.jl.tpl",
             Dict{String, String}("PKG" => pkg, "API_PKG" => api_pkg)
         )
+        # Mirror codegen-time runtime deps that aren't already in the test
+        # template into `test/Project.toml`. The package's own Project.toml
+        # gets these from `OpenAPISpec._add_codegen_deps`, but the test env
+        # is a sibling project and needs its own [deps] entries — otherwise
+        # `using TimeZones` from a test file fails on Julia 1.10 with
+        # "Package TimeZones not found in current path."
+        _add_test_deps(
+            test_dir, [
+                (name = "TimeZones", uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"),
+            ]
+        )
     end
     return nothing
+end
+
+function _add_test_deps(
+        test_dir::AbstractString,
+        deps::Vector{<:NamedTuple{(:name, :uuid)}},
+    )
+    path = joinpath(test_dir, "Project.toml")
+    toml = TOML.parsefile(path)
+    deps_table = get!(toml, "deps", Dict{String, Any}())
+    for d in deps
+        deps_table[d.name] = d.uuid
+    end
+    return open(path, "w") do io
+        TOML.print(io, toml; sorted = true)
+    end
 end
 
 function _write_test_file(
