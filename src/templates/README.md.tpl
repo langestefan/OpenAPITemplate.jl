@@ -97,6 +97,16 @@ the upstream spec and regenerate `src/api/`:
 julia --project gen/regenerate.jl
 ```
 
+For tighter inner loops while iterating on a spec locally:
+
+```julia
+# Skip the download; reuse the spec already on disk.
+julia --project gen/regenerate.jl --no-fetch
+
+# Use a local (possibly edited) spec file as the source.
+julia --project gen/regenerate.jl --from-file ../my-edited-spec.yaml
+```
+
 Requires Java 11+ and Node 18+. The pinned generator version lives in
 `gen/openapi-config.json`. The scheduled
 `.github/workflows/regen-check.yml` runs this weekly and opens a PR if
