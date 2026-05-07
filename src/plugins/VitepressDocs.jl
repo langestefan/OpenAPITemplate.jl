@@ -53,6 +53,24 @@ function PkgTemplates.posthook(p::VitepressDocs, t::Template, pkg_dir::AbstractS
     _write_docs_template(src_dir, "julia_reference.md", "docs/src/julia_reference.md.tpl", vars)
 
     if has_spec
+        # Julia-side @autodocs page covering every name codegen produced
+        # (operation functions, model types, helpers). Pairs with the REST
+        # browser below.
+        _write_docs_template(
+            src_dir, "generated_reference.md",
+            "docs/src/generated_reference.md.tpl", vars,
+        )
+        # `@autodocs` doesn't pick up `basepath(::Type{<Tag>Api})` methods
+        # because the function binding is shadowed across files. Append an
+        # explicit `@docs` block per Api class so checkdocs is clean. Same
+        # helper is also called from `gen/regenerate.jl` after codegen, so
+        # adding new tags to the spec keeps the section in sync.
+        emit_basepath_section(
+            joinpath(src_dir, "generated_reference.md"),
+            joinpath(pkg_dir, "src", "api", "apis"),
+            pkg,
+        )
+
         api_dir = joinpath(src_dir, "api")
         mkpath(api_dir)
         _write_docs_template(api_dir, "index.md", "docs/src/api/index.md.tpl", vars)
