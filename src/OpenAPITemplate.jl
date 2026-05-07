@@ -18,9 +18,11 @@ include("plugins/ClientLayer.jl")
 include("plugins/Reliability.jl")
 include("plugins/BrokenRecordTests.jl")
 include("plugins/VitepressDocs.jl")
+include("plugins/PreCommitChecks.jl")
 
 export APIWrapper,
-    OpenAPISpec, ClientLayer, Reliability, BrokenRecordTests, VitepressDocs
+    OpenAPISpec, ClientLayer, Reliability, BrokenRecordTests, VitepressDocs,
+    PreCommitChecks
 
 """
     APIWrapper(; spec_url=nothing,
@@ -52,9 +54,9 @@ t("MyWrapper")
     `]dev <name>`.
 
 The plugin list wires `OpenAPISpec`, `ClientLayer`, `Reliability`,
-`BrokenRecordTests`, and `VitepressDocs` on top of the standard PkgTemplates
-plugins (`ProjectFile`, `SrcDir`, `Readme`, `License`, `Git`, `Formatter`,
-`GitHubActions`, `Codecov`, `CompatHelper`, `TagBot`).
+`BrokenRecordTests`, `VitepressDocs`, and `PreCommitChecks` on top of the
+standard PkgTemplates plugins (`ProjectFile`, `SrcDir`, `Readme`, `License`,
+`Git`, `Formatter`, `GitHubActions`, `Codecov`, `CompatHelper`, `TagBot`).
 """
 function APIWrapper(;
         spec_url::Union{Nothing, AbstractString} = nothing,
@@ -82,6 +84,7 @@ function APIWrapper(;
         Reliability(; retry, rate_limit),
         BrokenRecordTests(),
         VitepressDocs(; deploy = deploy_docs),
+        PreCommitChecks(),
     ]
 end
 

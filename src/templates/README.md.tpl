@@ -80,13 +80,13 @@ full result set.
 Every non-2xx response is mapped to a typed exception by `check_response`:
 
 | Status | Type |
-|---|---|
+| --- | --- |
 | 401 / 403 | `AuthError` |
 | 408 / 429 | `RateLimitError` (parses `Retry-After`) |
 | Other 4xx | `ClientError` |
 | 5xx | `ServerError` |
 | Network / DNS / TLS | `NetworkError` (wraps cause) |
-| Timeout | `TimeoutError(:connect | :read | :total)` |
+| Timeout | `TimeoutError(:connect \| :read \| :total)` |
 
 ## Re-running codegen
 

@@ -1,4 +1,4 @@
-using Logging: Logging, @logmsg, Info
+using Logging: Logging, @logmsg
 
 const _SECRET_HEADERS = ("authorization", "x-api-key", "api_key", "cookie",
                         "set-cookie", "proxy-authorization")
